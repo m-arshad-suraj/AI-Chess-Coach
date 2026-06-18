@@ -10,7 +10,7 @@ interface GameOverModalProps {
   winner: "w" | "b" | "draw" | null;
   reason: string;
   playerColor: "w" | "b";
-  onRestart: () => void;
+  onClose: () => void;
 }
 
 export default function GameOverModal({
@@ -18,7 +18,7 @@ export default function GameOverModal({
   winner,
   reason,
   playerColor,
-  onRestart,
+  onClose,
 }: GameOverModalProps) {
   const isWin = winner === playerColor;
   const isDraw = winner === "draw";
@@ -40,7 +40,7 @@ export default function GameOverModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute inset-0 bg-black/75 backdrop-blur-xs"
-            onClick={onRestart}
+            onClick={onClose}
           />
 
           {/* Modal Container */}
@@ -94,10 +94,10 @@ export default function GameOverModal({
             {/* Action button */}
             <button
               type="button"
-              onClick={onRestart}
+              onClick={onClose}
               className="w-full bg-[#81b64c] hover:bg-[#95ca5c] text-white font-extrabold text-sm py-3 px-4 rounded-xl shadow-[0_4px_12px_rgba(129,182,76,0.2)] transition-colors duration-150 uppercase tracking-wide cursor-pointer"
             >
-              Play Again
+              OK
             </button>
           </motion.div>
         </div>
