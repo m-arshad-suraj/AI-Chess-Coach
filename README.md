@@ -2,9 +2,14 @@
 
 An elegant, fully-featured, full-stack Chess application against a computer opponent (Bot) built with Next.js, `chess.js`, and `react-chessboard`. 
 
-The user interface mimics the premium, clean, and smooth experience of Chess.com, featuring modern animations, check flashes, a synthesized audio system, and a local Stockfish engine. In addition, it integrates a dedicated **AI Coach Commentary Sidebar** that streams real-time, grandmaster-level chess advice utilizing Stockfish suggestions and the Gemini 1.5 Flash API.
+The user interface mimics the premium, clean, and smooth experience of Chess.com, featuring modern animations, check flashes, a synthesized audio system, and a local Stockfish engine. In addition, it integrates a dedicated **AI Coach Commentary Sidebar** that streams real-time, grandmaster-level chess advice utilizing Stockfish suggestions and the Gemini API.
 
 Developed by **Arshad Suraj**.
+
+---
+
+## Live Deployment
+This app is hosted live at: **[https://arshad-ai-chess-coach.netlify.app](https://arshad-ai-chess-coach.netlify.app)**
 
 ---
 
@@ -15,7 +20,7 @@ Developed by **Arshad Suraj**.
   * Play against the bot and click the **"Get AI Coach Advice"** button during your turn.
   * The coach runs Stockfish in a separate Web Worker thread at Grandmaster level (depth 15/level 10) to find the best move.
   * The current board FEN, the **entire match move history**, and Stockfish's suggested move are sent to a secure Next.js Server Route.
-  * The server communicates with the Gemini 1.5 Flash API and streams real-time, grandfatherly coach advice word-by-word.
+  * The server communicates with the Gemini API (configurable via `GEMINI_MODEL` environment variable) and streams real-time, grandfatherly coach advice word-by-word.
   * The commentary box features dynamic skeleton loader animations during calculations.
   * The advice automatically clears and the button deactivates as soon as you play a move. The button reactivates for the new board state once the opponent bot makes its countermove.
 - **100% Offline Local Playing Engine**: Integrates a client-side Stockfish Web Worker (`public/stockfish.js`) which runs as a browser thread. It has zero network requirements and no external `.wasm` fetch dependency. If the worker stalls, it automatically falls back to an instant local move generator using `chess.js`.
@@ -52,27 +57,34 @@ cd AI-Chess-Coach
 npm install
 ```
 
-### 3. Configure the Gemini API Key
-To enable the AI Coach, you must obtain a Gemini API Key from Google AI Studio and configure the `AI_API_KEY` environment variable.
+### 3. Configure Environment Variables
+To enable the AI Coach, you must configure the Gemini API Key and model variables.
 
 #### Option A: Create a `.env.local` file (Recommended)
-Create a file named `.env.local` in the root directory of the project and add the key:
+Create a file named `.env.local` in the root directory of the project and add the keys:
 ```env
 AI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-3.1-flash-lite
 ```
+
+* **`AI_API_KEY`**: Your Gemini API Key from Google AI Studio.
+* **`GEMINI_MODEL`**: The Gemini model name to use for analysis (e.g., `gemini-3.1-flash-lite`).
 
 #### Option B: Export in Terminal (Temporary)
 * **Windows Command Prompt (cmd):**
   ```cmd
   set AI_API_KEY=your_gemini_api_key_here
+  set GEMINI_MODEL=gemini-3.1-flash-lite
   ```
 * **Windows PowerShell:**
   ```powershell
   $env:AI_API_KEY="your_gemini_api_key_here"
+  $env:GEMINI_MODEL="gemini-3.1-flash-lite"
   ```
 * **Linux / macOS:**
   ```bash
   export AI_API_KEY="your_gemini_api_key_here"
+  export GEMINI_MODEL="gemini-3.1-flash-lite"
   ```
 
 ### 4. Run the Development Server
@@ -93,4 +105,4 @@ To compile and build the optimized production pages bundle:
 npm run build
 npm run start
 ```
-*(Make sure `AI_API_KEY` is exported on the server environment hosting the build/start server).*
+*(Make sure `AI_API_KEY` and `GEMINI_MODEL` are configured on the server environment hosting the build/start server).*
