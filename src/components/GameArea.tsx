@@ -6,6 +6,7 @@ import ChessBoard from "./ChessBoard";
 import GameSidebar from "./GameSidebar";
 import AICoachSidebar from "./AICoachSidebar";
 import GameOverModal from "./GameOverModal";
+import NewGameConfirmModal from "./NewGameConfirmModal";
 import { useStockfish } from "../hooks/useStockfish";
 import { sounds } from "../utils/sounds";
 
@@ -40,6 +41,9 @@ export default function GameArea({
     winner: "w" | "b" | "draw" | null;
     reason: string;
   } | null>(null);
+
+  // New Game confirmation state
+  const [isConfirmNewGameOpen, setIsConfirmNewGameOpen] = useState(false);
 
   // Stockfish hook for the playing bot
   const { getBestMove: getBotMove, isThinking: isBotThinking } = useStockfish();
@@ -224,9 +228,6 @@ export default function GameArea({
         // Winner is the player whose turn it isn't
         winner = game.turn() === "w" ? "b" : "w";
         reason = "by Checkmate";
-        // Play game over sound directly
-        const isWin = winner === playerColor;
-        sounds.playGameOver(isWin);
       } else if (game.isStalemate()) {
         reason = "by Stalemate";
       } else if (game.isThreefoldRepetition()) {
@@ -239,31 +240,27 @@ export default function GameArea({
       }
 
       setGameResult({ winner, reason });
-
-      // Do not open popup modal on checkmate
-      if (!checkmate) {
-        setIsGameOverModalOpen(true);
-      }
+      setIsGameOverModalOpen(true);
     }
   }, [game, playerColor]);
 
-  // Resignation Handler
-  const handleResign = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
+
+
+  // New Game confirmation trigger
+  const handleNewGame = () => {
+    if (game.isGameOver()) {
+      confirmNewGame();
+    } else {
+      setIsConfirmNewGameOpen(true);
     }
-    setGameResult({
-      winner: botColor,
-      reason: "by Resignation",
-    });
-    setIsGameOverModalOpen(true);
   };
 
-  // New Game reset
-  const handleNewGame = () => {
+  // Perform New Game reset
+  const confirmNewGame = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
+    setIsConfirmNewGameOpen(false);
     onReturnToWelcome();
   };
 
@@ -296,7 +293,6 @@ export default function GameArea({
           difficulty={difficulty}
           playerColor={playerColor}
           isBotThinking={isBotThinking}
-          onResign={handleResign}
           onNewGame={handleNewGame}
           isGameOver={game.isGameOver()}
         />
@@ -320,7 +316,14 @@ export default function GameArea({
         winner={gameResult?.winner ?? null}
         reason={gameResult?.reason ?? ""}
         playerColor={playerColor}
-        onRestart={handleNewGame}
+        onClose={() => setIsGameOverModalOpen(false)}
+      />
+
+      {/* New Game Confirmation Modal */}
+      <NewGameConfirmModal
+        isOpen={isConfirmNewGameOpen}
+        onConfirm={confirmNewGame}
+        onClose={() => setIsConfirmNewGameOpen(false)}
       />
     </div>
   );

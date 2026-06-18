@@ -112,7 +112,15 @@ Stockfish engine recommended best move for me in this position: ${bestMove}
 
 Please provide your coach analysis and advice for this state.`;
 
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:streamGenerateContent?alt=sse&key=${apiKey}`;
+    const modelName = process.env.GEMINI_MODEL;
+    if (!modelName) {
+      return Response.json(
+        { error: "GEMINI_MODEL environment variable is not set. Please set GEMINI_MODEL environment variable on the server." },
+        { status: 500 }
+      );
+    }
+
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:streamGenerateContent?alt=sse&key=${apiKey}`;
 
     const response = await fetch(geminiUrl, {
       method: "POST",

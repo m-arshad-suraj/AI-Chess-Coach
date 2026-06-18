@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { Chess } from "chess.js";
-import { Cpu, User, RefreshCw, Flag, Swords } from "lucide-react";
+import { Cpu, User, RefreshCw, Swords } from "lucide-react";
 import { DIFFICULTY_LEVELS } from "../hooks/useStockfish";
 
 interface GameSidebarProps {
@@ -10,7 +10,6 @@ interface GameSidebarProps {
   difficulty: number;
   playerColor: "w" | "b";
   isBotThinking: boolean;
-  onResign: () => void;
   onNewGame: () => void;
   isGameOver: boolean;
 }
@@ -20,11 +19,10 @@ export default function GameSidebar({
   difficulty,
   playerColor,
   isBotThinking,
-  onResign,
   onNewGame,
   isGameOver,
 }: GameSidebarProps) {
-  const historyEndRef = useRef<HTMLDivElement | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const activeLevelConfig = DIFFICULTY_LEVELS[difficulty] || DIFFICULTY_LEVELS[5];
   const history = game.history();
   const currentTurn = game.turn();
@@ -45,7 +43,12 @@ export default function GameSidebar({
 
   // Scroll move history to the bottom when new moves are added
   useEffect(() => {
-    historyEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        top: scrollContainerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
   }, [history]);
 
   return (
@@ -127,7 +130,7 @@ export default function GameSidebar({
         <div className="text-[10px] font-black uppercase tracking-wider text-zinc-500 border-b border-zinc-800 pb-2 mb-2">
           Moves Log
         </div>
-        <div className="flex-grow overflow-y-auto custom-scrollbar pr-1">
+        <div ref={scrollContainerRef} className="flex-grow overflow-y-auto custom-scrollbar pr-1">
           {movePairs.length === 0 ? (
             <div className="h-full flex items-center justify-center text-xs font-semibold text-zinc-600 italic select-none">
               Waiting for first move...
@@ -145,27 +148,17 @@ export default function GameSidebar({
                   </div>
                 </React.Fragment>
               ))}
-              <div ref={historyEndRef} />
             </div>
           )}
         </div>
       </div>
 
       {/* Action Controls */}
-      <div className="grid grid-cols-2 gap-3 mt-auto select-none">
-        <button
-          type="button"
-          disabled={isGameOver}
-          onClick={onResign}
-          className="flex items-center justify-center gap-2 bg-zinc-950 hover:bg-rose-950/20 hover:text-rose-400 hover:border-rose-900/50 border border-zinc-800 disabled:opacity-30 disabled:hover:bg-zinc-950 disabled:hover:text-zinc-500 disabled:hover:border-zinc-800 text-zinc-400 font-extrabold text-xs py-3 px-4 rounded-xl cursor-pointer transition-all duration-150"
-        >
-          <Flag className="w-4 h-4" /> Resign
-        </button>
-
+      <div className="mt-auto select-none">
         <button
           type="button"
           onClick={onNewGame}
-          className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 font-extrabold text-xs py-3 px-4 rounded-xl border border-zinc-700 cursor-pointer transition-colors duration-150"
+          className="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 font-extrabold text-xs py-3.5 px-4 rounded-xl border border-zinc-700 cursor-pointer transition-colors duration-150"
         >
           <RefreshCw className="w-4 h-4" /> New Game
         </button>

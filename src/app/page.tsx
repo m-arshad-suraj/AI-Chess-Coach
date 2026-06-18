@@ -32,7 +32,7 @@ export default function Home() {
             ♟
           </div>
           <span className="font-extrabold text-sm tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-zinc-100 to-zinc-400">
-            Chess Coach AI
+            AI Chess Coach
           </span>
         </div>
       </header>
@@ -51,6 +51,16 @@ export default function Home() {
           />
         )}
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-zinc-900 bg-zinc-950/40 py-6 text-center text-xs text-zinc-500 mt-auto select-none">
+        <p className="flex items-center justify-center gap-1.5 font-medium">
+          <span>Developed by</span>
+          <span className="font-extrabold text-zinc-350 hover:text-emerald-400 transition-colors duration-250 bg-clip-text text-transparent bg-gradient-to-r from-zinc-100 to-zinc-300 hover:from-emerald-400 hover:to-teal-300">
+            Arshad Suraj
+          </span>
+        </p>
+      </footer>
     </div>
   );
 }
